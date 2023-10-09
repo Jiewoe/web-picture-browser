@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from picture_app.browser.load_file import get_cities, get_all_pictures
 from picture_app.browser.save_file import save_file
 from picture_app.models import Picture
 
@@ -9,10 +10,10 @@ from picture_app.models import Picture
 
 def page(request):
     # 城市
-    cities = []
+    cities = get_cities()
 
     # 照片数据
-    pictures = []
+    pictures = get_all_pictures()
 
     code = 0
     msg = "success"
@@ -32,7 +33,7 @@ def test(request):
 def upload(request):
     files = request.FILES
     address = request.POST.get('location')
-    shot_time = request.POST.get('time')
+    shot_time = request.POST.get('shot-date')
 
     (code, msg) = save_file(files, address, shot_time)
 

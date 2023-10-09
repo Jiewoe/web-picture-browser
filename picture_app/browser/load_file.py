@@ -36,3 +36,23 @@ province_dict = {
     "澳门": "Macau",
     "台湾": "Taiwan",
 }
+
+
+def get_cities() -> list:
+    cities = []
+    for each in province_dict.values():
+        cities.append(each)
+    return cities
+
+
+def get_all_pictures() -> list:
+    all_images = Picture.objects.all()
+    pictures = []
+    for each in all_images:
+        image = {
+            "title": each.title,
+            "shot_time": each.shot_time.strftime("%Y-%m-%d"),
+            "address": each.address,
+        }
+        pictures.append(image)
+    return pictures
