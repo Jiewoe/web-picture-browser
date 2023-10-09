@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+      <link rel="stylesheet" href="/static/css/viewer.min.css">
+</head>
+<body>
+              <div> <img width="100%" height="225px" id="picture" data-original="/media/picture_files/default.png" src="/media/picture_files/default.png" alt="图片1"> </div>
+<script src="/static/js/viewer.min.js"></script>
+</body>
+
+  <script src="/static/js/code.jquery.com_jquery-3.7.1.min.js"></script>
+<script>
+    var viewer = new Viewer(document.getElementById('picture'));
+    viewer.navbar = 0;
+{#$('#picture').viewer({#}
+{#    navbar: 0#}
+{#  });#}
+</script>
+</html>
