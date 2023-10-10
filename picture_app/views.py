@@ -34,8 +34,9 @@ def upload(request):
     files = request.FILES
     address = request.POST.get('location')
     shot_time = request.POST.get('shot-date')
+    title = request.POST.get('title')
 
-    (code, msg) = save_file(files, address, shot_time)
+    (code, msg) = save_file(files, address, shot_time, title)
 
     ret = {
         "code": code,

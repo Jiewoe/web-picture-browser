@@ -49,10 +49,13 @@ def get_all_pictures() -> list:
     all_images = Picture.objects.all()
     pictures = []
     for each in all_images:
+        file_path = each.file.path
+        p = '/'+'/'.join(file_path.split('\\')[-3:])
         image = {
             "title": each.title,
             "shot_time": each.shot_time.strftime("%Y-%m-%d"),
             "address": each.address,
+            "path": p
         }
         pictures.append(image)
     return pictures

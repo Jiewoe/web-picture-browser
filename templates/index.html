@@ -193,8 +193,16 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label" for="customFile">Shot Date</label>
-                                <input id="shot-date" type="text" name="single-date-picker" class="form-control">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="customFile">Shot Date</label>
+                                        <input id="shot-date" type="text" name="single-date-picker" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="customFile">Title</label>
+                                        <input id="title" type="text" class="form-control">
+                                    </div>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <div class="row justify-content-center">
@@ -260,63 +268,18 @@
         <div class="album py-5 bg-body-tertiary">
             <div class="container">
 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="picture-container">
                     <div class="col">
                         <div class="card shadow-sm">
-                            <div> <img width="100%" height="225px" id="picture1"
+                            <div> <img width="100%" height="225px" id="pictureEF"
                                     data-original="/media/picture_files/default.png"
                                     src="/media/picture_files/default.png" alt="图片1"> </div>
                             <div class="card-body">
                                 <p class="card-text">This is a wider card with supporting text below as a natural
                                     lead-in to additional content. This content is a little bit longer.</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button id="picture1 button" type="button" class="btn btn-sm btn-outline-secondary"
+                                    <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
                                             onclick="view(this)">View</button>
-                                    <small class="text-body-secondary">9 mins</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">Thumbnail</text>
-                            </svg>
-                            <div class="card-body">
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                    </div>
-                                    <small class="text-body-secondary">9 mins</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">Thumbnail</text>
-                            </svg>
-                            <div class="card-body">
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                    </div>
                                     <small class="text-body-secondary">9 mins</small>
                                 </div>
                             </div>
@@ -373,6 +336,57 @@
             $('#city-selector').append(e2);
         }
 
+        for (let i=0; i<pictures.length; i++) {
+            let col_div = document.createElement('div');
+            let card_div = document.createElement('div');
+            let img_div = document.createElement('div');
+            let img = document.createElement('img');
+            let card_body_div = document.createElement('div');
+            let footer_div = document.createElement('div');
+            let p = document.createElement('p');
+            let view_button = document.createElement('button');
+            let small = document.createElement('small');
+            let small2 = document.createElement('small');
+
+            col_div.setAttribute('class', 'col');
+            card_div.setAttribute('class', 'card shadow-sm');
+            card_body_div.setAttribute('class', 'card-body');
+            footer_div.setAttribute('class', 'd-flex justify-content-between align-items-center');
+            p.setAttribute('class', 'card-text');
+            view_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
+            small.setAttribute('class', 'text-body-secondary');
+            small2.setAttribute('class', 'text-body-secondary');
+
+            view_button.setAttribute('id', 'picture'+i+' button');
+            view_button.setAttribute('type', 'button');
+            view_button.setAttribute('onclick', 'view(this)');
+            view_button.innerHTML = 'View';
+
+            img.setAttribute('width', '100%');
+            img.setAttribute('height', '225px');
+            img.setAttribute('id', 'picture'+i);
+            img.setAttribute('data-original', pictures[i].path);
+            img.setAttribute('src', pictures[i].path);
+            img.setAttribute('alt', 'picture'+i);
+
+            small.innerHTML = pictures[i].shot_time;
+            small2.innerHTML = pictures[i].address;
+            p.innerHTML = pictures[i].title;
+
+            col_div.appendChild(card_div);
+            card_div.appendChild(img_div);
+            card_div.appendChild(card_body_div);
+
+            img_div.appendChild(img);
+            card_body_div.appendChild(p);
+            card_body_div.appendChild(footer_div);
+            footer_div.appendChild(view_button);
+            footer_div.appendChild(small);
+            {#footer_div.appendChild(small2);#}
+
+            $('#picture-container').append(col_div);
+        }
+
         $('#upload-form').submit(function (e) {
             e.preventDefault();
 
@@ -383,6 +397,7 @@
             }
             dataList.append('location', $('#city-selector option:selected').val());
             dataList.append('shot-date', $('#shot-date').val());
+            dataList.append('title', $('#title').val());
 
             $.ajax({
                 //请求方式
