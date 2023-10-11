@@ -44,3 +44,13 @@ def upload(request):
     }
     response = JsonResponse(ret)
     return response
+
+
+def city_sort(request):
+    sort_mode = request.GET.get('sort')
+    print(sort_mode)
+    pass
+
+
+def time_sort(request):
+    pass

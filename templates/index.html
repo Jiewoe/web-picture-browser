@@ -187,7 +187,7 @@
                                 <input id="image-file" type="file" class="form-control" multiple>
                             </div>
                             <div class="mb-3">
-                                <label for="validationServer04" class="form-label">Filming Locations</label>
+                                <label for="validationServer04" class="form-label">Shot Location</label>
                                 <select class="form-select" id="city-selector" required>
                                   <option selected disabled value="unknown location">Unknown Location</option>
                                 </select>
@@ -247,10 +247,10 @@
                         skip over it entirely.</p>
                     <div class="row justify-content-center">
                         <div class="col-md-5">
-                            <select class="form-select" id="sort-order" required>
+                            <select class="form-select" id="sort-time" required>
                                 <option value="inorder">sort by...</option>
                                 <option value="inorder">time</option>
-                                <option value="inorder">reverse time</option>
+                                <option value="inorder">time reversed</option>
                             </select>
                         </div>
 
@@ -258,6 +258,7 @@
                             <select class="form-select" id="sort-city" required>
                                 <option value="all">select location...</option>
                                 <option value="all">all regions</option>
+                                <option value="other">other region</option>
                             </select>
                         </div>
                     </div>
@@ -275,12 +276,16 @@
                                     data-original="/media/picture_files/default.png"
                                     src="/media/picture_files/default.png" alt="图片1"> </div>
                             <div class="card-body">
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
+                                <p class="card-text">Default picture</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
-                                            onclick="view(this)">View</button>
-                                    <small class="text-body-secondary">9 mins</small>
+                                    <div class="btn-group">
+                                        <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
+                                                onclick="view(this)">View</button>
+                                        <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
+                                                onclick="view(this)">Delete</button>
+                                    </div>
+
+                                    <small class="text-body-secondary">9 mins | Beijing</small>
                                 </div>
                             </div>
                         </div>
@@ -313,13 +318,19 @@
 <script>
     var cities = {{ data.cities | safe }};
     var pictures = {{ data.pictures | safe }};
+    var viewers = {};
 
     function view(dom) {
         let name = dom.getAttribute('id').split(' ')[0];
-        var viewer = new Viewer(document.getElementById(name), {
-            navbar: false
-        });
-        viewer.show();
+        if (viewers.hasOwnProperty(name)) {
+            viewers[name].show();
+        } else {
+            let viewer = new Viewer(document.getElementById(name), {
+                navbar: false
+            });
+            viewer.show();
+            viewers[name] = viewer;
+        }
     }
 
     $(document).ready(function () {
@@ -346,7 +357,6 @@
             let p = document.createElement('p');
             let view_button = document.createElement('button');
             let small = document.createElement('small');
-            let small2 = document.createElement('small');
 
             col_div.setAttribute('class', 'col');
             card_div.setAttribute('class', 'card shadow-sm');
@@ -355,7 +365,6 @@
             p.setAttribute('class', 'card-text');
             view_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
             small.setAttribute('class', 'text-body-secondary');
-            small2.setAttribute('class', 'text-body-secondary');
 
             view_button.setAttribute('id', 'picture'+i+' button');
             view_button.setAttribute('type', 'button');
@@ -369,8 +378,7 @@
             img.setAttribute('src', pictures[i].path);
             img.setAttribute('alt', 'picture'+i);
 
-            small.innerHTML = pictures[i].shot_time;
-            small2.innerHTML = pictures[i].address;
+            small.innerHTML = pictures[i].shot_time + ' | ' + pictures[i].address;
             p.innerHTML = pictures[i].title;
 
             col_div.appendChild(card_div);
@@ -382,7 +390,6 @@
             card_body_div.appendChild(footer_div);
             footer_div.appendChild(view_button);
             footer_div.appendChild(small);
-            {#footer_div.appendChild(small2);#}
 
             $('#picture-container').append(col_div);
         }
@@ -404,7 +411,6 @@
                 type : "POST",
                 //请求的服务器地址
                 url : "/upload/",
-                //数据，json字符串
                 data : dataList,
                 processData: false,
                 contentType: false,
@@ -419,6 +425,44 @@
                 error : function(e){
                     console.log(e.status);
                     console.log(e.responseText);
+                }
+            });
+        });
+
+        $('#sort-time').change(function () {
+            let selected = this.val();
+            let data = {
+                'sort': selected
+            }
+
+            $.ajax({
+                type: "GET",
+                url: '/city_sort/',
+                data: data,
+                success: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+
+        $('#sort-city').change(function () {
+            let selected = $('#sort-city option:selected').val();
+            let data = {
+                'sort': selected
+            }
+
+            $.ajax({
+                type: "GET",
+                url: '/time_sort/',
+                data: data,
+                success: function (response) {
+
+                },
+                error: function (response) {
+                    
                 }
             });
         });
