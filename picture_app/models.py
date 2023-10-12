@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -12,3 +14,8 @@ class Picture(models.Model):
 
     class Meta:
         db_table = 'pictures'
+
+
+@receiver(pre_delete, sender=Picture)
+def delete_file(sender, instance, **kwargs):
+    instance.file.delete(False)

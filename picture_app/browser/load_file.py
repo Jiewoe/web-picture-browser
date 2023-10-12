@@ -46,7 +46,7 @@ def get_cities() -> list:
 
 
 def get_all_pictures() -> list:
-    all_images = Picture.objects.all()
+    all_images = Picture.objects.all().order_by('-shot_time')
     pictures = []
     for each in all_images:
         file_path = each.file.path
@@ -55,7 +55,8 @@ def get_all_pictures() -> list:
             "title": each.title,
             "shot_time": each.shot_time.strftime("%Y-%m-%d"),
             "address": each.address,
-            "path": p
+            "path": p,
+            "key": each.id
         }
         pictures.append(image)
     return pictures

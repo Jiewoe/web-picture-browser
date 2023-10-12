@@ -9,15 +9,12 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.118.2">
-    <title>Album example · Bootstrap v5.3</title>
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
+    <title>Web Album Browser</title>
 
 
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
     <link rel="stylesheet" href="/static/css/viewer.min.css">
-
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/daterangepicker.css" rel="stylesheet">
 
@@ -169,16 +166,16 @@
         </ul>
     </div>
 
-
     <header data-bs-theme="dark">
         <div class="collapse text-bg-dark" id="navbarHeader">
             <div class="container">
                 <div class="row">
                     <div class="col-sm-8 col-md-7 py-4">
                         <h4>About</h4>
-                        <p class="text-body-secondary">Add some information about the album below, the author, or any
-                            other background context. Make it a few sentences long so folks can pick up some informative
-                            tidbits. Then, link them off to some social networking sites or contact information.</p>
+                        <p class="text-body-secondary">This is a photo browsing webpage. You can upload files to this
+                            webpage through the file transfer portal on the right. After refreshing the page, you can
+                            see the uploaded pictures below. Two options are provided below. You can choose the picture
+                            browsing method through different option combinations.</p>
                     </div>
                     <div class="col-sm-4 offset-md-1 py-4">
                         <form id="upload-form">
@@ -241,16 +238,15 @@
         <section class="py-5 text-center container">
             <div class="row py-lg-5">
                 <div class="col-lg-6 col-md-8 mx-auto">
-                    <h1 class="fw-light">Album example</h1>
-                    <p class="lead text-body-secondary">Something short and leading about the collection below—its
-                        contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply
-                        skip over it entirely.</p>
+                    <h1 class="fw-light">Album Browser</h1>
+                    <p class="lead text-body-secondary">The album web browser can easily manage the photos stored on
+                        your device and supports a multi-functional photo browser.</p>
                     <div class="row justify-content-center">
                         <div class="col-md-5">
                             <select class="form-select" id="sort-time" required>
-                                <option value="inorder">sort by...</option>
-                                <option value="inorder">time</option>
-                                <option value="inorder">time reversed</option>
+                                <option value="descend">sort by...</option>
+                                <option value="descend">time descend</option>
+                                <option value="ascend">time ascend</option>
                             </select>
                         </div>
 
@@ -270,27 +266,6 @@
             <div class="container">
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="picture-container">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <div> <img width="100%" height="225px" id="pictureEF"
-                                    data-original="/media/picture_files/default.png"
-                                    src="/media/picture_files/default.png" alt="图片1"> </div>
-                            <div class="card-body">
-                                <p class="card-text">Default picture</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
-                                                onclick="view(this)">View</button>
-                                        <button id="pictureEF button" type="button" class="btn btn-sm btn-outline-secondary"
-                                                onclick="view(this)">Delete</button>
-                                    </div>
-
-                                    <small class="text-body-secondary">9 mins | Beijing</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -302,9 +277,8 @@
             <p class="float-end mb-1">
                 <a href="#">Back to top</a>
             </p>
-            <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-            <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a
-                    href="../getting-started/introduction/">getting started guide</a>.</p>
+            <p class="mb-1">Album Browser is built on &copy;Bootstrap, and the author is a student of CQU.</p>
+            <p class="mb-0">More author's projects? <a href="https://github.com/Jiewoe">Visit author's github homepage.</a> </p>
         </div>
     </footer>
     <script src="/static/js/bootstrap.bundle.min.js"></script>
@@ -316,9 +290,12 @@
 <script src="/static/js/daterangepicker.js"></script>
 
 <script>
+    var time_sort_mode = 'descend';
+    var city_sort_mode = 'all';
     var cities = {{ data.cities | safe }};
     var pictures = {{ data.pictures | safe }};
     var viewers = {};
+    var all_cities = null;
 
     function view(dom) {
         let name = dom.getAttribute('id').split(' ')[0];
@@ -333,7 +310,43 @@
         }
     }
 
+    function del(dom) {
+        let name = dom.getAttribute('id').split(' ')[0];
+        let id = dom.getAttribute('id').split(' ')[2];
+        let data = {
+            'id': id
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/delete/",
+            data: data,
+            success: function (response) {
+                if (response.code === 0) {
+                    let ele = $('#picture-container>div');
+                    for(let i=0; i<ele.length; i++) {
+                        if (ele[i].id.split(' ')[0] === name) {
+                            ele.eq(i).remove();
+                            break;
+                        }
+                    }
+                    for (let i=0; i<all_cities.length; i++) {
+                        if (all_cities[i].id.split(' ')[0] === name) {
+                            all_cities.not(':eq('+ i.toString() +')');
+                            break;
+                        }
+                    }
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+
     $(document).ready(function () {
+        var container = $('#picture-container');
+
         for (let i=0; i<cities.length; i++) {
             let e1 = document.createElement('option');
             e1.setAttribute('value', cities[i]);
@@ -356,20 +369,30 @@
             let footer_div = document.createElement('div');
             let p = document.createElement('p');
             let view_button = document.createElement('button');
+            let del_button = document.createElement('button');
+            let btn_group = document.createElement('div');
             let small = document.createElement('small');
 
+            col_div.setAttribute('id', 'picture'+i.toString()+' '+pictures[i].address);
             col_div.setAttribute('class', 'col');
             card_div.setAttribute('class', 'card shadow-sm');
             card_body_div.setAttribute('class', 'card-body');
             footer_div.setAttribute('class', 'd-flex justify-content-between align-items-center');
             p.setAttribute('class', 'card-text');
             view_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
+            del_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
             small.setAttribute('class', 'text-body-secondary');
+            btn_group.setAttribute('class', 'btn-group');
 
             view_button.setAttribute('id', 'picture'+i+' button');
             view_button.setAttribute('type', 'button');
             view_button.setAttribute('onclick', 'view(this)');
             view_button.innerHTML = 'View';
+
+            del_button.setAttribute('id', 'picture'+i+' del_button '+pictures[i].key);
+            del_button.setAttribute('type', 'button');
+            del_button.setAttribute('onclick', 'del(this)');
+            del_button.innerHTML = 'Delete';
 
             img.setAttribute('width', '100%');
             img.setAttribute('height', '225px');
@@ -388,11 +411,15 @@
             img_div.appendChild(img);
             card_body_div.appendChild(p);
             card_body_div.appendChild(footer_div);
-            footer_div.appendChild(view_button);
+            btn_group.appendChild(view_button);
+            btn_group.appendChild(del_button);
+            footer_div.appendChild(btn_group);
             footer_div.appendChild(small);
 
-            $('#picture-container').append(col_div);
+            container.append(col_div);
         }
+
+        all_cities = $('#picture-container>div');
 
         $('#upload-form').submit(function (e) {
             e.preventDefault();
@@ -417,7 +444,7 @@
                 //请求成功的回调函数
                 success : function(result) {
                     if (result.code === 0) {
-                        alert('Upload successfully!');
+                        alert('Upload successfully! Please refresh the page. ');
                         $('#upload-form')[0].reset();
                     }
                 },
@@ -430,42 +457,66 @@
         });
 
         $('#sort-time').change(function () {
-            let selected = this.val();
-            let data = {
-                'sort': selected
-            }
-
-            $.ajax({
-                type: "GET",
-                url: '/city_sort/',
-                data: data,
-                success: function (response) {
-
-                },
-                error: function (response) {
-
-                }
-            });
+            let selected = $('#sort-time option:selected').val();
+            sort_col(selected);
         });
 
         $('#sort-city').change(function () {
             let selected = $('#sort-city option:selected').val();
-            let data = {
-                'sort': selected
-            }
-
-            $.ajax({
-                type: "GET",
-                url: '/time_sort/',
-                data: data,
-                success: function (response) {
-
-                },
-                error: function (response) {
-                    
-                }
-            });
+            change_city(selected);
         });
+
+        var change_city = function (city) {
+            if (city_sort_mode === city)
+                return;
+            if (city === 'all') {
+                container.empty().append(all_cities);
+                city_sort_mode = city;
+                return;
+            }
+            var eles = [];
+            for (let i=0; i<all_cities.length; i++) {
+                if (all_cities[i].id.split(' ')[1] === city) {
+                    eles.push(all_cities[i]);
+                }
+            }
+            container.empty().append(eles);
+            city_sort_mode = city;
+        }
+        var sort_col = function (order) {
+            if (order === time_sort_mode)
+                return
+            if (order === 'descend')
+                var ele = $('#picture-container>div').sort(descend);
+            else
+                var ele = $('#picture-container>div').sort(ascend);
+            container.empty().append(ele);
+            time_sort_mode = order;
+        }
+        var descend = function (a, b) {
+            var idA = a.id;
+            var idB = b.id;
+
+            if (idA > idB) {
+                return 1;
+            } else if (idA < idB) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+        var ascend = function (a, b) {
+            var idA = a.id;
+            var idB = b.id;
+
+            if (idA < idB) {
+                return 1;
+            } else if (idA > idB) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
     });
 
 </script>

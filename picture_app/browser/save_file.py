@@ -5,14 +5,20 @@ from picture_app.models import Picture
 
 
 def save_file(files:  MultiValueDict, address: str, shot_time: str, title: str) -> (int, str):
+    i = 0
     try:
         for file in files.values():
             picture = Picture()
-            picture.title = title
+            if title == '':
+                title = file.name.split('.')[0]
+                picture.title = title
+            else:
+                picture.title = title + ' - ' + str(i+1)
             picture.address = address
             picture.file = file
             picture.shot_time = datetime.strptime(shot_time, "%m/%d/%Y")
             picture.save()
+            i += 1
         code = 0
         msg = 'success'
     except Exception as e:

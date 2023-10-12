@@ -14,6 +14,8 @@ def page(request):
 
     # 照片数据
     pictures = get_all_pictures()
+    request.session['time-sort'] = 'descend'
+    request.session['city-sort'] = 'all'
 
     code = 0
     msg = "success"
@@ -48,9 +50,49 @@ def upload(request):
 
 def city_sort(request):
     sort_mode = request.GET.get('sort')
-    print(sort_mode)
-    pass
+
+    ret = {
+        "code": 0,
+        "msg": 'success'
+    }
+    if sort_mode == request.session.get('time-sort'):
+        response = JsonResponse(ret)
+        return response
+
+    response = JsonResponse(ret)
+    return response
 
 
 def time_sort(request):
-    pass
+    sort_mode = request.GET.get('sort')
+
+    ret = {
+        "code": '',
+        "msg": ''
+    }
+
+    if sort_mode == request.session.get('city-sort'):
+        response = JsonResponse(ret)
+        return response
+
+    response = JsonResponse(ret)
+    return response
+
+
+def delete(request):
+    picture_id = request.GET.get('id')
+    try:
+        Picture.objects.get(id=picture_id).delete()
+        code = 0
+        msg = 'success'
+    except Exception as e:
+        print(e.args)
+        code = 1
+        msg = 'fail'
+
+    ret = {
+        "code": code,
+        "msg": msg
+    }
+    response = JsonResponse(ret)
+    return response
