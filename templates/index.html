@@ -241,8 +241,10 @@
                     <h1 class="fw-light">Album Browser</h1>
                     <p class="lead text-body-secondary">The album web browser can easily manage the photos stored on
                         your device and supports a multi-functional photo browser.</p>
-                    <div class="row justify-content-center">
-                        <div class="col-md-5">
+
+                    <div class="mb-3">
+                        <div class="row justify-content-center">
+                        <div class="col-md-3">
                             <select class="form-select" id="sort-time" required>
                                 <option value="descend">sort by...</option>
                                 <option value="descend">time descend</option>
@@ -250,21 +252,25 @@
                             </select>
                         </div>
 
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <select class="form-select" id="sort-city" required>
                                 <option value="all">select location...</option>
                                 <option value="all">all regions</option>
                                 <option value="other">other region</option>
                             </select>
                         </div>
+                        <div class="col-md-5" >
+                            <input id="date-range" type="text" name="simple-date-range-picker" class="form-control">
+                        </div>
                     </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
         <div class="album py-5 bg-body-tertiary">
             <div class="container">
-
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="picture-container">
                 </div>
             </div>
@@ -292,6 +298,8 @@
 <script>
     var time_sort_mode = 'descend';
     var city_sort_mode = 'all';
+    var time_start = '1970-01-01';
+    var time_end = '2070-01-01';
     var cities = {{ data.cities | safe }};
     var pictures = {{ data.pictures | safe }};
     var viewers = {};
@@ -373,7 +381,7 @@
             let btn_group = document.createElement('div');
             let small = document.createElement('small');
 
-            col_div.setAttribute('id', 'picture'+i.toString()+' '+pictures[i].address);
+            col_div.setAttribute('id', 'picture'+i.toString()+' '+pictures[i].address+ ' '+ pictures[i].id);
             col_div.setAttribute('class', 'col');
             card_div.setAttribute('class', 'card shadow-sm');
             card_body_div.setAttribute('class', 'card-body');
@@ -381,7 +389,8 @@
             p.setAttribute('class', 'card-text');
             view_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
             del_button.setAttribute('class', 'btn btn-sm btn-outline-secondary');
-            small.setAttribute('class', 'text-body-secondary');
+            small.setAttribute('class', 'text-body-secondary time-stamp');
+            small.setAttribute('id', 'picture'+i.toString()+' ')
             btn_group.setAttribute('class', 'btn-group');
 
             view_button.setAttribute('id', 'picture'+i+' button');
@@ -420,6 +429,30 @@
         }
 
         all_cities = $('#picture-container>div');
+
+        $('.applyBtn').click(function (e) {
+            let time_range = $('#date-range').val().split(' - ');
+            let start = time_range[0];
+            let end = time_range[1];
+            let start_tokens = start.split('/').reverse();
+            let end_tokens = end.split('/').reverse();
+
+            start = start_tokens[0] + '-' + start_tokens[2] + '-' + start_tokens[1];
+            end = end_tokens[0] + '-' + end_tokens[2] + '-' + end_tokens[1];
+
+            let pictures = $('#picture-container>div');
+            let times = $('.time-stamp');
+
+            let eles = [];
+            for (let i=0; i<all_cities.length; i++) {
+                let temp = times[i].innerHTML.split(' | ')[0];
+                if (temp >= start && temp >= end && (all_cities[i].id.split(' ')[1] === city_sort_mode
+                || city_sort_mode === 'all')) {
+                    eles.push(pictures[i]);
+                }
+            }
+            container.empty().append(eles);
+        });
 
         $('#upload-form').submit(function (e) {
             e.preventDefault();
