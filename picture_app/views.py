@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from picture_app.browser.load_file import get_cities, get_all_pictures
+from picture_app.browser.load_file import get_cities, get_all_pictures, city_choice
 from picture_app.browser.save_file import save_file
 from picture_app.models import Picture
 
@@ -11,6 +11,7 @@ from picture_app.models import Picture
 def page(request):
     # 城市
     cities = get_cities()
+    all_cities = city_choice()
 
     # 照片数据
     pictures = get_all_pictures()
@@ -19,7 +20,7 @@ def page(request):
 
     code = 0
     msg = "success"
-    data = {"pictures": pictures, "cities": cities}
+    data = {"pictures": pictures, "cities": cities, "all_cities": all_cities}
     ret = {
         "code": code,
         "msg": msg,

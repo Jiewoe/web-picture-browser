@@ -12,8 +12,10 @@ def save_file(files:  MultiValueDict, address: str, shot_time: str, title: str) 
             if title == '':
                 title = file.name.split('.')[0]
                 picture.title = title
-            else:
+            elif len(files) > 1:
                 picture.title = title + ' - ' + str(i+1)
+            else:
+                picture.title = title
             picture.address = address
             picture.file = file
             picture.shot_time = datetime.strptime(shot_time, "%m/%d/%Y")

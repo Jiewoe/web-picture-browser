@@ -39,9 +39,14 @@ province_dict = {
 
 
 def get_cities() -> list:
+    cities = Picture.objects.values_list('address', flat=True).distinct()
+    return list(cities)
+
+
+def city_choice() -> list:
     cities = []
-    for each in province_dict.values():
-        cities.append(each)
+    for city in province_dict.values():
+        cities.append(city)
     return cities
 
 

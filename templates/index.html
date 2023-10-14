@@ -301,9 +301,11 @@
     var time_start = '1970-01-01';
     var time_end = '2070-01-01';
     var cities = {{ data.cities | safe }};
+    var cities2 = {{ data.all_cities | safe }};
     var pictures = {{ data.pictures | safe }};
     var viewers = {};
     var all_cities = null;
+    var times = null;
 
     function view(dom) {
         let name = dom.getAttribute('id').split(' ')[0];
@@ -355,17 +357,18 @@
     $(document).ready(function () {
         var container = $('#picture-container');
 
-        for (let i=0; i<cities.length; i++) {
-            let e1 = document.createElement('option');
-            e1.setAttribute('value', cities[i]);
-            e1.innerHTML = cities[i];
-
+        for (let i=0; i<cities2.length; i++) {
             let e2 = document.createElement('option');
-            e2.setAttribute('value', cities[i]);
-            e2.innerHTML = cities[i];
-
-            $('#sort-city').append(e1);
+            e2.setAttribute('value', cities2[i]);
+            e2.innerHTML = cities2[i];
             $('#city-selector').append(e2);
+
+            if (i < cities.length) {
+                let e1 = document.createElement('option');
+                e1.setAttribute('value', cities[i]);
+                e1.innerHTML = cities[i];
+                $('#sort-city').append(e1);
+            }
         }
 
         for (let i=0; i<pictures.length; i++) {
@@ -429,29 +432,29 @@
         }
 
         all_cities = $('#picture-container>div');
+        times = $('.time-stamp');
 
         $('.applyBtn').click(function (e) {
-            let time_range = $('#date-range').val().split(' - ');
-            let start = time_range[0];
-            let end = time_range[1];
-            let start_tokens = start.split('/').reverse();
-            let end_tokens = end.split('/').reverse();
+            setTimeout(function () {
+                let time_range = $('#date-range').val().split(' - ');
+                let start = time_range[0];
+                let end = time_range[1];
+                let start_tokens = start.split('/').reverse();
+                let end_tokens = end.split('/').reverse();
 
-            start = start_tokens[0] + '-' + start_tokens[2] + '-' + start_tokens[1];
-            end = end_tokens[0] + '-' + end_tokens[2] + '-' + end_tokens[1];
+                start = start_tokens[0] + '-' + start_tokens[2] + '-' + start_tokens[1];
+                end = end_tokens[0] + '-' + end_tokens[2] + '-' + end_tokens[1];
 
-            let pictures = $('#picture-container>div');
-            let times = $('.time-stamp');
-
-            let eles = [];
-            for (let i=0; i<all_cities.length; i++) {
-                let temp = times[i].innerHTML.split(' | ')[0];
-                if (temp >= start && temp >= end && (all_cities[i].id.split(' ')[1] === city_sort_mode
-                || city_sort_mode === 'all')) {
-                    eles.push(pictures[i]);
+                let eles = [];
+                for (let i=0; i<all_cities.length; i++) {
+                    let temp = times[i].innerHTML.split(' | ')[0];
+                    if (temp >= start && temp <= end && (all_cities[i].id.split(' ')[1] === city_sort_mode
+                    || city_sort_mode === 'all')) {
+                        eles.push(all_cities[i]);
+                    }
                 }
-            }
-            container.empty().append(eles);
+                container.empty().append(eles);
+            }, 10)
         });
 
         $('#upload-form').submit(function (e) {
@@ -498,7 +501,6 @@
             let selected = $('#sort-city option:selected').val();
             change_city(selected);
         });
-
         var change_city = function (city) {
             if (city_sort_mode === city)
                 return;
